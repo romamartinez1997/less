@@ -23,8 +23,17 @@ const PRODUCTS=[{id:1,cat:0,name:"Сыворотка с гиалуроновой
 {id:17,cat:5,name:"Набор «Праймер и тон»",desc:"Основа для безупречного макияжа.",price:2300,old:0,pop:66,isNew:1},
 {id:18,cat:5,name:"Набор «Подарочный Glow»",desc:"Крем, помада и мист для тела.",price:2950,old:3600,pop:92,isNew:1}];
 const byId=id=>PRODUCTS.find(p=>p.id==id);
-function card(p){const f=LS.get('bg_fav',[]).includes(p.id);return `<article class="card"><a href="product.html?id=${p.id}" class="img"><img src="images/p${p.id}.svg" alt="${p.name}" loading="lazy">${p.old?`<span class="tag">-${Math.round(100-p.price/p.old*100)}%</span>`:p.isNew?'<span class="tag">New</span>':''}</a><button class="heart ${f?'on':''}" data-fav="${p.id}" aria-label="В избранное">♥</button><div class="info"><small>${CATS[p.cat]}</small><h3><a href="product.html?id=${p.id}">${p.name}</a></h3><div class="price">${fmt(p.price)} ${p.old?`<s>${fmt(p.old)}</s>`:''}</div><div class="btns"><button class="btn" data-cart="${p.id}">В корзину</button><a class="btn ghost" href="product.html?id=${p.id}">Подробнее</a></div></div></article>`}
-function initCatalog(){const g=window.$('#grid');if(!g)return;const mode=document.body.dataset.mode,u=new URLSearchParams(location.search);
+const PRODUCT_IMAGES={
+1:"images/stock/stock3.jpg",2:"images/stock/stock2.jpg",3:"images/stock/stock4.jpg",
+4:"images/stock/stock5.jpg",5:"images/stock/stock1.jpg",6:"images/stock/stock5.jpg",
+7:"images/stock/stock3.jpg",8:"images/stock/stock2.jpg",9:"images/stock/stock10.jpg",
+10:"images/stock/stock1.jpg",11:"images/stock/stock7.jpg",12:"images/stock/stock3.jpg",
+13:"images/stock/stock4.jpg",14:"images/stock/stock10.jpg",15:"images/stock/stock6.jpg",
+16:"images/stock/stock8.jpg",17:"images/stock/stock5.jpg",18:"images/stock/stock10.jpg"
+};
+const imageFor=p=>PRODUCT_IMAGES[p.id];
+function card(p){const f=LS.get('bg_fav',[]).includes(p.id);return `<article class="card"><a href="product.html?id=${p.id}" class="img"><img src="${imageFor(p)}" alt="${p.name}" loading="lazy">${p.old?`<span class="tag">-${Math.round(100-p.price/p.old*100)}%</span>`:p.isNew?'<span class="tag">New</span>':''}</a><button class="heart ${f?'on':''}" data-fav="${p.id}" aria-label="В избранное">♥</button><div class="info"><small>${CATS[p.cat]}</small><h3><a href="product.html?id=${p.id}">${p.name}</a></h3><div class="price">${fmt(p.price)} ${p.old?`<s>${fmt(p.old)}</s>`:''}</div><div class="btns"><button class="btn" data-cart="${p.id}">В корзину</button><a class="btn ghost" href="product.html?id=${p.id}">Подробнее</a></div></div></article>`}
+function initCatalog(){const g=window.$('#grid');if(!g||!window.$('#cat'))return;const mode=document.body.dataset.mode,u=new URLSearchParams(location.search);
 window.$('#cat').innerHTML='<option value="">Все категории</option>'+CATS.map((c,i)=>`<option value="${i}">${c}</option>`).join('');
 window.$('#q').value=u.get('q')||'';window.$('#cat').value=u.get('cat')||'';
 function r(){let q=window.$('#q').value.toLowerCase().trim(),c=window.$('#cat').value,mn=+window.$('#min').value||0,mx=+window.$('#max').value||1e9,s=window.$('#sort').value;
@@ -34,7 +43,7 @@ window.$('#count').textContent='Найдено: '+l.length;g.innerHTML=l.length?
 window.$$('.filters input,.filters select').forEach(e=>e.addEventListener('input',r));window.$('#reset').onclick=()=>{window.$$('.filters input').forEach(e=>e.value='');window.$('#cat').value='';window.$('#sort').value='pop';r()};r();window.addEventListener('favchange',r)}
 function initProduct(){const b=window.$('#product');if(!b)return;const p=byId(new URLSearchParams(location.search).get('id'));if(!p){location.replace('404.html');return}
 document.title=p.name+' — BEAUTY GLOW';
-b.innerHTML=`<div class="pimg"><img src="images/p${p.id}.svg" alt="${p.name}"></div><div><small>${CATS[p.cat]}</small><h1>${p.name}</h1><p>${p.desc}</p><div class="price big">${fmt(p.price)} ${p.old?`<s>${fmt(p.old)}</s>`:''}</div><div class="qty"><button id="m">−</button><span id="n">1</span><button id="pl">+</button></div><div class="btns"><button class="btn" id="add">В корзину</button><button class="btn dark" id="buy">Купить</button><button class="btn ghost" data-fav="${p.id}">В избранное</button></div><p><a class="btn ghost" href="javascript:history.back()">← Назад</a> <a class="btn ghost" href="catalog.html">Продолжить покупки</a></p></div>`;
+b.innerHTML=`<div class="pimg"><img src="${imageFor(p)}" alt="Иллюстративное фото косметики для товара «${p.name}»"></div><div><small>${CATS[p.cat]}</small><h1>${p.name}</h1><p>${p.desc}</p><p class="photo-note">Фото иллюстративное: товар, бренд или упаковка на снимке могут отличаться.</p><div class="price big">${fmt(p.price)} ${p.old?`<s>${fmt(p.old)}</s>`:''}</div><div class="qty"><button id="m">−</button><span id="n">1</span><button id="pl">+</button></div><div class="btns"><button class="btn" id="add">В корзину</button><button class="btn dark" id="buy">Купить</button><button class="btn ghost" data-fav="${p.id}">В избранное</button></div><p><a class="btn ghost" href="javascript:history.back()">← Назад</a> <a class="btn ghost" href="catalog.html">Продолжить покупки</a></p></div>`;
 let n=1;window.$('#m').onclick=()=>window.$('#n').textContent=n=Math.max(1,n-1);window.$('#pl').onclick=()=>window.$('#n').textContent=++n;
 window.$('#add').onclick=()=>{addCart(p.id,n);toast('Товар добавлен в корзину')};window.$('#buy').onclick=()=>{addCart(p.id,n);location.href='checkout.html'};
 window.$('#related').innerHTML=PRODUCTS.filter(x=>x.cat==p.cat&&x.id!=p.id).map(card).join('')}
@@ -47,4 +56,3 @@ if (document.readyState === 'loading') {
   initCatalog();
   initProduct();
 }
-

@@ -14,7 +14,7 @@ $('#bg').onclick=()=>$('#nav').classList.toggle('open');
 document.addEventListener('click',e=>{const a=e.target.closest('[data-cart],[data-fav]');if(!a)return;if(a.dataset.cart){addCart(+a.dataset.cart);toast('Товар добавлен в корзину')}else toggleFav(+a.dataset.fav)});
 const fill=(id,l)=>{const e=$(id);if(e)e.innerHTML=l.map(card).join('')};
 fill('#h-pop',[...PRODUCTS].sort((a,b)=>b.pop-a.pop).slice(0,4));fill('#h-new',PRODUCTS.filter(p=>p.isNew).slice(0,4));fill('#h-sale',PRODUCTS.filter(p=>p.old).slice(0,4));
-const hc=$('#h-cats');if(hc)hc.innerHTML=CATS.map((c,i)=>`<a class="cat" href="catalog.html?cat=${i}"><img src="images/p${i*3+1}.svg" alt="${c}"><span>${c}</span></a>`).join('');
+const hc=$('#h-cats');if(hc)hc.innerHTML=CATS.map((c,i)=>`<a class="cat" href="catalog.html?cat=${i}"><img src="${imageFor(PRODUCTS.find(p=>p.cat===i))}" alt="${c}"><span>${c}</span></a>`).join('');
 const nl=$('#news');if(nl)nl.onsubmit=e=>{e.preventDefault();if(!/^\S+@\S+\.\S+$/.test($('#nemail').value))return toast('Введите корректный email');LS.set('bg_sub',$('#nemail').value);nl.reset();toast('Вы подписаны на новости!')};
 const cf=$('#cform');if(cf)cf.onsubmit=e=>{e.preventDefault();const m=LS.get('bg_msgs',[]);m.push({t:Date.now(),n:cf.n.value,m:cf.m.value});LS.set('bg_msgs',m);cf.reset();toast('Сообщение отправлено. Мы свяжемся с вами!')};
 badges();
